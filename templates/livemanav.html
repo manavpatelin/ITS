@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Traffic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #3949ab;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            background: #f0f2f5;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .stat-info p {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .traffic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .lane-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            gap: 2rem;
+            overflow: hidden;
+        }
+
+        .lane-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--secondary);
+        }
+
+        .lane-header {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .traffic-light {
+            background: var(--dark);
+            width: 80px;
+            height: 240px;
+            border-radius: 40px;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .light {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #444;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+
+        .red.active { background: var(--danger); box-shadow: 0 0 30px rgba(244,67,54,0.5); }
+        .yellow.active { background: var(--warning); box-shadow: 0 0 30px rgba(255,152,0,0.5); }
+        .green.active { background: var(--success); box-shadow: 0 0 30px rgba(76,175,80,0.5); }
+
+        .timer {
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .video-feed {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .vehicle-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .vehicle-count i {
+            color: var(--secondary);
+        }
+
+        .ambulance-alert {
+            color: var(--danger);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--success)">
+                <i class="fas fa-car"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Total Vehicles</h3>
+                <p id="total-vehicles">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--warning)">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Avg Wait Time</h3>
+                <p id="avg-wait">0s</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--danger)">
+                <i class="fas fa-ambulance"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Emergency Vehicles</h3>
+                <p id="emergency-count">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--secondary)">
+                <i class="fas fa-traffic-light"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Active Lanes</h3>
+                <p id="active-lanes">4</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="traffic-grid">
+        {% for i in range(1, 5) %}
+        <div class="lane-card">
+            <div class="lane-header">
+                <i class="fas fa-road"></i>
+                Lane {{ i }}
+            </div>
+            <div class="traffic-light">
+                <div class="light red"></div>
+                <div class="light yellow"></div>
+                <div class="light green"></div>
+                <div class="digital-timer">
+                    <span id="timer-{{i}}">00</span>
+                </div>
+            </div>
+            <div class="video-section">
+                <img class="video-feed" src="{{ url_for('video_feed', lane_id=i) }}" alt="Lane {{ i }}">
+                <div class="stats-bar">
+                    <div class="vehicle-count">
+                        <i class="fas fa-car"></i>
+                        Vehicles: <span id="count-{{ i }}">0</span>
+                    </div>
+                    <div id="ambulance-{{ i }}" class="ambulance-alert"></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="loading">Updating...</div>
+
+    <script>
+        function updateStats() {
+            const counts = document.querySelectorAll('[id^="count-"]');
+            let total = 0;
+            counts.forEach(count => {
+                total += parseInt(count.textContent) || 0;
+            });
+            document.getElementById('total-vehicles').textContent = total;
+        }
+
+        function updateTrafficLights() {
+            fetch('/traffic_states')
+                .then(response => response.json())
+                .then(states => {
+                    for (let lane in states) {
+                        const laneElement = document.querySelector(`.lane-card:nth-child(${lane})`);
+                        const redLight = laneElement.querySelector('.light.red');
+                        const yellowLight = laneElement.querySelector('.light.yellow');
+                        const greenLight = laneElement.querySelector('.light.green');
+                        const timer = laneElement.querySelector('.digital-timer');
+                        const timerDisplay = timer.querySelector('span');
+
+                        redLight.classList.toggle('active', states[lane].color === 'red');
+                        yellowLight.classList.toggle('active', states[lane].color === 'yellow');
+                        greenLight.classList.toggle('active', states[lane].color === 'green');
+                        
+                        // Update timer color and value
+                        timer.classList.toggle('green', states[lane].color === 'green');
+                        timerDisplay.textContent = states[lane].timer.toString().padStart(2, '0');
+
+                        // Update average wait time
+                        const avgWait = Math.max(...Object.values(states).map(s => s.remaining_red || 0));
+                        document.getElementById('avg-wait').textContent = `${avgWait}s`;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateVehicleCounts() {
+            fetch('/vehicle_counts')
+                .then(response => response.json())
+                .then(counts => {
+                    Object.keys(counts).forEach(laneId => {
+                        document.getElementById(`count-${laneId}`).textContent = counts[laneId];
+                    });
+                    updateStats();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function checkAmbulance() {
+            fetch('/ambulance_status')
+                .then(response => response.json())
+                .then(status => {
+                    let emergencyCount = 0;
+                    Object.keys(status).forEach(laneId => {
+                        const indicator = document.getElementById(`ambulance-${laneId}`);
+                        if (status[laneId]) {
+                            indicator.innerHTML = '<i class="fas fa-ambulance"></i> EMERGENCY';
+                            indicator.style.display = 'flex';
+                            emergencyCount++;
+                        } else {
+                            indicator.style.display = 'none';
+                        }
+                    });
+                    document.getElementById('emergency-count').textContent = emergencyCount;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Initialize updates with error handling
+        function initializeUpdates() {
+            updateTrafficLights();
+            updateVehicleCounts();
+            checkAmbulance();
+        }
+
+        setInterval(initializeUpdates, 1000);
+        initializeUpdates();
+    </script>
+</body>
+</html>

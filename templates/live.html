@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Traffic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/live.css') }}">
+</head>
+<body>
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--success)">
+                <i class="fas fa-car"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Total Vehicles</h3>
+                <p id="total-vehicles">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--warning)">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Avg Wait Time</h3>
+                <p id="avg-wait">0s</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--danger)">
+                <i class="fas fa-ambulance"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Emergency Vehicles</h3>
+                <p id="emergency-count">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--secondary)">
+                <i class="fas fa-traffic-light"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Active Lanes</h3>
+                <p id="active-lanes">4</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="traffic-grid">
+        {% for i in range(1, 5) %}
+        <div class="lane-card">
+            <div class="lane-header">
+                <i class="fas fa-road"></i>
+                Lane {{ i }}
+            </div>
+            <div class="traffic-light">
+                <div class="light red"></div>
+                <div class="light yellow"></div>
+                <div class="light green"></div>
+                <div class="digital-timer">
+                    <span id="timer-{{i}}">00</span>
+                </div>
+            </div>
+            <div class="video-section">
+                <img class="video-feed" src="{{ url_for('video_feed', lane_id=i) }}" alt="Lane {{ i }}">
+                <div class="stats-bar">
+                    <div class="vehicle-count">
+                        <i class="fas fa-car"></i>
+                        Vehicles: <span id="count-{{ i }}">0</span>
+                    </div>
+                    <div id="ambulance-{{ i }}" class="ambulance-alert"></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="loading">Updating...</div>
+
+    <script src="{{ url_for('static', filename='js/live.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+Flask==3.1.0
+numpy==2.2.4
+opencv_python==4.11.0.86
+opencv_python_headless==4.10.0.84
+pandas==2.2.3
+psycopg2==2.9.10
+Requests==2.32.3
+SQLAlchemy==2.0.40
+torch==2.5.1+cu118
+torch==2.6.0+cu118
+ultralytics==8.3.95
+flask_cors

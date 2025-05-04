@@ -1,0 +1,186 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #f5f5f5;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #1a237e;
+    color: white;
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.menu button {
+    padding: 1rem;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.menu button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.menu button.active {
+    background-color: #3949ab;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+body {
+    margin: 0;
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.card-title {
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.alert-badge {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.congestion-indicator {
+    padding: 8px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+#congestionStatus .col-3 {
+    padding: 0 5px;
+}
+
+#clock {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* Fixed height for chart containers */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+/* Adjust height for specific charts as needed */
+.chart-container-small {
+    height: 200px;
+}
+
+.chart-container-large {
+    height: 300px;
+}
+
+.btn {
+    padding: 8px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background-color: #0088FE;
+    border-color: #0088FE;
+}
+
+.btn-success {
+    background-color: #00C49F;
+    border-color: #00C49F;
+}
+
+/* Live update indicator styles */
+#update-indicator {
+    transition: all 0.3s ease;
+}
+
+.flash-update {
+    transform: scale(1.2);
+    background-color: #00C49F !important;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1a237e;
+}
